@@ -1,0 +1,27 @@
+### **Crisis Management & PR Public Opinion Report Template**
+
+- **1.0 Report Summary**
+  - 1.1 Event Classification
+  - 1.2 Core Conclusions
+  - 1.3 Key Recommendations
+- **2.0 Event Origin & Development Timeline**
+  - 2.1 Event Background & Initial Report
+  - 2.2 Key Development Timeline
+  - 2.3 Current Situation
+- **3.0 Public Opinion Communication Analysis**
+  - 3.1 Communication Volume Trends
+  - 3.2 Core Communication Channels
+  - 3.3 Key Communication Nodes (KOL/Media)
+- **4.0 Public Opinion Focus & Public Attitudes**
+  - 4.1 Opinion Focus Analysis
+  - 4.2 Public Sentiment Distribution
+  - 4.3 Key Opinion Excerpts
+- **5.0 Risk Assessment**
+  - 5.1 Short-term Risks
+  - 5.2 Long-term Risks
+  - 5.3 Secondary/Derivative Risks
+- **6.0 Response Strategy & Handling Recommendations**
+  - 6.1 Golden Response Period Recommendations
+  - 6.2 Statement & Messaging Recommendations
+  - 6.3 Internal & External Communication Strategy
+  - 6.4 Follow-up Action Plan

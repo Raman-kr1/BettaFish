@@ -1,6 +1,6 @@
 """
-节点处理模块
-实现Deep Search Agent的各个处理步骤
+Node processing module
+Implements the various processing steps of Deep Search Agent
 """
 
 from .base_node import BaseNode

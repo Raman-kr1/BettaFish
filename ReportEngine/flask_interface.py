@@ -1,10 +1,10 @@
 """
-Report Engine Flask接口。
+Report Engine Flask Interface.
 
-该模块为前端/CLI提供统一HTTP/SSE入口，负责：
-1. 初始化 ReportAgent 并串联后台线程；
-2. 管理任务排队、进度查询、流式推送与日志下载；
-3. 提供模板列表、输入文件检查等周边能力。
+This module provides a unified HTTP/SSE entry point for frontend/CLI, responsible for:
+1. Initializing ReportAgent and managing background threads;
+2. Managing task queuing, progress queries, streaming push, and log downloads;
+3. Providing template lists, input file checks, and other auxiliary features.
 """
 
 import os
@@ -23,19 +23,19 @@ from .nodes import ChapterJsonParseError
 from .utils.config import settings
 
 
-# 创建Blueprint
+# Create Blueprint
 report_bp = Blueprint('report_engine', __name__)
 
-# 全局变量
+# Global variables
 report_agent = None
 current_task = None
 task_lock = threading.Lock()
 
-# ====== 流式推送与任务历史管理 ======
-# 通过有界deque缓存最近的事件，方便SSE断线后快速补发
+# ====== Streaming Push and Task History Management ======
+# Use bounded deque to cache recent events for quick replay after SSE disconnection
 MAX_TASK_HISTORY = 5
-STREAM_HEARTBEAT_INTERVAL = 15  # 心跳间隔秒
-STREAM_IDLE_TIMEOUT = 120  # 终态后最长保活时间，避免孤儿SSE阻塞
+STREAM_HEARTBEAT_INTERVAL = 15  # Heartbeat interval in seconds
+STREAM_IDLE_TIMEOUT = 120  # Max keep-alive time after terminal state to avoid orphan SSE blocking
 STREAM_TERMINAL_STATUSES = {"completed", "error", "cancelled"}
 stream_lock = threading.Lock()
 stream_subscribers = defaultdict(list)
@@ -47,10 +47,10 @@ EXCLUDED_ENGINE_PATH_KEYWORDS = ("ForumEngine", "InsightEngine", "MediaEngine", 
 
 def _is_excluded_engine_log(record: Dict[str, Any]) -> bool:
     """
-    判断日志是否来自其他引擎（Insight/Media/Query/Forum），用于过滤混入的日志。
+    Check if the log is from other engines (Insight/Media/Query/Forum) for filtering.
 
-    返回:
-        bool: True 表示应当过滤（即不写入/不转发）。
+    Returns:
+        bool: True indicates it should be filtered (i.e., not written/forwarded).
     """
     try:
         file_path = record["file"].path
@@ -59,7 +59,7 @@ def _is_excluded_engine_log(record: Dict[str, Any]) -> bool:
     except Exception:
         pass
 
-    # 兜底：尝试按模块名过滤，防止file信息缺失时误混入
+    # Fallback: try filtering by module name to prevent mixing when file info is missing
     try:
         module_name = record.get("module", "")
         if isinstance(module_name, str):
@@ -73,9 +73,9 @@ def _is_excluded_engine_log(record: Dict[str, Any]) -> bool:
 
 def _stream_log_to_task(message):
     """
-    将loguru日志同步到当前任务的SSE事件，保证前端实时可见。
+    Sync loguru logs to the current task's SSE events for real-time visibility.
 
-    仅在存在运行中的任务时推送，避免无关日志刷屏。
+    Only pushes when there is a running task to avoid flooding with unrelated logs.
     """
     try:
         record = message.record
@@ -105,12 +105,12 @@ def _stream_log_to_task(message):
             },
         )
     except Exception:
-        # 避免在日志钩子里产生日志递归
+        # Avoid log recursion in the log hook
         pass
 
 
 def _setup_log_stream_forwarder():
-    """为当前进程挂载一次性的loguru钩子，用于SSE实时转发。"""
+    """Attach a one-time loguru hook for real-time SSE forwarding in the current process."""
     global log_stream_handler_id
     if log_stream_handler_id is not None:
         return
